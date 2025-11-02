@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:personal_wealth_tracker/feature/common/currency_util.dart';
 
-class AmountInfoTile extends StatelessWidget {
-  const AmountInfoTile({
+class AmountInfoTileHorizontal extends StatelessWidget {
+  const AmountInfoTileHorizontal({
     super.key,
     required this.title,
     required this.amount,
@@ -20,7 +20,7 @@ class AmountInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(16),
@@ -33,7 +33,8 @@ class AmountInfoTile extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
+        spacing: 16,
         children: [
           if (icon != null)
             Container(
@@ -44,10 +45,8 @@ class AmountInfoTile extends StatelessWidget {
               ),
               child: icon!,
             ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8, bottom: 4),
-            child: Text(title, style: TextStyle(fontSize: 14)),
-          ),
+          Text(title, style: TextStyle(fontSize: 14)),
+          Spacer(),
           Text(
             formatNumber
                 ? getFormattedCurrencyShort(amount)

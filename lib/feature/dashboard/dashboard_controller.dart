@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_wealth_tracker/feature/dashboard/dashboard_service.dart';
 import 'package:personal_wealth_tracker/feature/dashboard/model/asset.dart';
 import 'package:personal_wealth_tracker/feature/dashboard/model/dashboard_view_state.dart';
 import 'package:personal_wealth_tracker/feature/dashboard/model/liability.dart';
+import 'package:personal_wealth_tracker/feature/login/auth_controller.dart';
 
 class DashboardController extends ChangeNotifier {
   DashboardController() {
@@ -20,6 +22,7 @@ class DashboardController extends ChangeNotifier {
   final Map<String, List<Asset>> assets = {};
   final Map<String, List<Liability>> liabilities = {};
 
+  // TODO: Optimize calculations by caching values and updating only when data changes
   double get totalAssets => viewState.value.assets.values
       .expand((list) => list)
       .fold(0.0, (sum, asset) => sum + asset.value);
@@ -28,6 +31,7 @@ class DashboardController extends ChangeNotifier {
       .fold(0.0, (sum, liability) => sum + liability.value);
   double get debtRatio =>
       totalAssets == 0 ? 0 : (totalLiabilities / totalAssets) / 100;
+  double get netWorth => totalAssets - totalLiabilities;
 
   Future<void> init() async {
     await loadAssetsAndLiabilities();
@@ -121,5 +125,17 @@ class DashboardController extends ChangeNotifier {
     this.liabilities.addAll(liabilities);
 
     // TODO: Handle error cases
+  }
+
+  User get user {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently signed in.');
+    }
+    return user;
+  }
+
+  Future<void> logout() async {
+    await AuthController.instance.logout();
   }
 }
